@@ -20,45 +20,72 @@
 //
 // No hints this time!
 
-// I AM NOT DONE
 
+
+// 定义一个公开的枚举类型，用于表示不同的命令
 pub enum Command {
-    Uppercase,
-    Trim,
-    Append(usize),
+    Uppercase,  // 将字符串转换为大写的命令
+    Trim,       // 去除字符串首尾空白字符的命令
+    Append(usize), // 向字符串末尾追加指定次数 "bar" 的命令，usize 表示追加次数
 }
 
+// 定义一个模块
 mod my_module {
+    // 从外部模块引入 Command 枚举
     use super::Command;
 
-    // TODO: Complete the function signature!
-    pub fn transformer(input: ???) -> ??? {
-        // TODO: Complete the output declaration!
-        let mut output: ??? = vec![];
+    // 定义 transformer 函数，接收一个包含 (String, Command) 元组的向量作为输入，返回一个字符串向量
+    pub fn transformer(input: Vec<(String, Command)>) -> Vec<String> {
+        // 初始化一个空的字符串向量，用于存储处理后的字符串
+        let mut output: Vec<String> = vec![];
+        // 遍历输入向量中的每个元组
         for (string, command) in input.iter() {
-            // TODO: Complete the function body. You can do it!
+            // 根据命令类型对字符串进行相应的处理
+            let result = match command {
+                Command::Uppercase => string.to_uppercase(), // 将字符串转换为大写
+                Command::Trim => string.trim().to_string(), // 去除字符串首尾的空白字符
+                Command::Append(n) => {
+                    let mut new_string = string.clone();
+                    // 循环追加指定次数的 "bar" 到字符串末尾
+                    for _ in 0..*n {
+                        new_string.push_str("bar");
+                    }
+                    new_string
+                }
+            };
+            // 将处理后的字符串添加到输出向量中
+            output.push(result);
         }
-        output
+        // 明确返回 output 向量
+        return output;
     }
 }
 
+// 测试模块，只有在测试环境下才会编译
 #[cfg(test)]
 mod tests {
-    // TODO: What do we need to import to have `transformer` in scope?
-    use ???;
+    // 从外部模块引入 transformer 函数
+    use super::my_module::transformer;
+    // 从外部模块引入 Command 枚举
     use super::Command;
 
+    // 定义一个测试函数
     #[test]
     fn it_works() {
+        // 调用 transformer 函数，传入包含字符串和命令的向量
         let output = transformer(vec![
-            ("hello".into(), Command::Uppercase),
-            (" all roads lead to rome! ".into(), Command::Trim),
-            ("foo".into(), Command::Append(1)),
-            ("bar".into(), Command::Append(5)),
+            ("hello".to_string(), Command::Uppercase),
+            (" all roads lead to rome! ".to_string(), Command::Trim),
+            ("foo".to_string(), Command::Append(1)),
+            ("bar".to_string(), Command::Append(5)),
         ]);
+        // 断言输出的第一个元素是否符合预期
         assert_eq!(output[0], "HELLO");
+        // 断言输出的第二个元素是否符合预期
         assert_eq!(output[1], "all roads lead to rome!");
+        // 断言输出的第三个元素是否符合预期
         assert_eq!(output[2], "foobar");
+        // 断言输出的第四个元素是否符合预期
         assert_eq!(output[3], "barbarbarbarbarbar");
     }
 }
